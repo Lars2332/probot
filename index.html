@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ProBot • Landing</title>
+  <meta name="description" content="ProBot — inteligentny bot Discord. Zaproś go na serwer jednym kliknięciem." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+  <style>
+  /* ========== Styles (dark, with top-left logo + animated waves) ========== */
+  :root{
+    --bg-top: #071028;
+    --bg-mid: #031022;
+    --bg-bottom: #000000;
+    --accent-cyan: #4fd3ff;
+    --accent-indigo: #6b8cff;
+    --support-color: #7289da;
+    --card-size: 370px;
+    --radius: 18px;
+    --text: #e6f8ff;
+    --muted: rgba(230,245,255,0.72);
+
+    --wave-1: #1a0b27;    /* darkest */
+    --wave-2: #2b0f3f;
+    --wave-3: #3e1760;    /* purple */
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    min-height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 500px at 10% 10%, rgba(79,211,255,0.03), transparent 8%),
+      radial-gradient(900px 400px at 90% 85%, rgba(107,140,255,0.03), transparent 9%),
+      linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 55%, var(--bg-bottom) 100%);
+  }
+  body::after{ content:""; position:fixed; inset:0; z-index:1; pointer-events:none; background: radial-gradient(60% 40% at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.28) 100%); mix-blend-mode:multiply; }
+
+  /* ---------- TOP WAVES (new) ---------- */
+  .top-waves{
+    position:fixed; top:0; left:0; right:0; height:140px; z-index:5; pointer-events:none; overflow:hidden;
+    display:block;
+  }
+  .top-waves svg{ width:200%; height:140px; display:block; transform-origin: center; }
+  .wave-group{ transform: translateX(0); opacity:0.95; filter: blur(6px); }
+  .wave1{ animation: waveMove 18s linear infinite; opacity:0.95; }
+  .wave2{ animation: waveMoveReverse 24s linear infinite; opacity:0.82; filter: blur(8px); }
+  .wave3{ animation: waveMove 30s linear infinite; opacity:0.7; filter: blur(10px); }
+
+  @keyframes waveMove{
+    0%{ transform: translateX(0) }
+    50%{ transform: translateX(-25%) }
+    100%{ transform: translateX(0) }
+  }
+  @keyframes waveMoveReverse{
+    0%{ transform: translateX(0) }
+    50%{ transform: translateX(25%) }
+    100%{ transform: translateX(0) }
+  }
+
+  /* top-left logo (moved from right to left) */
+  .top-logo{
+    position:fixed; top:16px; left:16px; right:auto; z-index:30;
+    width:76px; height:76px; object-fit:contain; border-radius:12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 2px 8px rgba(255,255,255,0.02) inset;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+    padding:8px;
+  }
+
+  canvas#bg{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.95; }
+
+  .decor-svgs{ position:fixed; inset:0; z-index:3; pointer-events:none; overflow:hidden; }
+
+  .wrap{ position:relative; z-index:6; width:100%; max-width:1100px; padding:40px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px; }
+
+  .card{
+    width:var(--card-size); height:var(--card-size); border-radius:calc(var(--radius) + 6px);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    position:relative; transform-style:preserve-3d; backdrop-filter: blur(8px) saturate(120%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 8px 24px rgba(6,12,30,0.6);
+    padding:28px; transition: transform 350ms cubic-bezier(.2,.9,.3,1), box-shadow 250ms; overflow:hidden;
+  }
+  .card::before{ content:""; position:absolute; inset:-2px; z-index:0; background: linear-gradient(120deg, rgba(79,211,255,0.06), rgba(107,140,255,0.04)); filter: blur(28px); opacity:0.6; }
+  .card > *{ position:relative; z-index:2 }
+
+  .blob{ position:absolute; right:-40px; top:-40px; width:160px; height:160px; z-index:1; background: radial-gradient(circle at 30% 30%, rgba(79,211,255,0.12), rgba(107,140,255,0.06) 45%, transparent 60%); filter: blur(20px); transform: rotate(8deg); animation: floatBlob 7000ms ease-in-out infinite; pointer-events:none }
+  @keyframes floatBlob{ 0%{ transform: translateY(0) rotate(0deg) }50%{ transform: translateY(-8px) rotate(8deg) }100%{ transform: translateY(0) rotate(0deg) } }
+
+  .brand{ display:flex; align-items:center; gap:10px; padding:6px 12px; border-radius:10px; background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); box-shadow: inset 0 -6px 18px rgba(0,0,0,0.35); font-weight:700; z-index:3 }
+  .logo{ font-size:46px; font-weight:800; line-height:1; letter-spacing:0.6px; background: linear-gradient(90deg, #fff 0%, var(--accent-cyan) 28%, var(--accent-indigo) 64%, #fff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 10px 30px rgba(2,8,30,0.6); display:flex; align-items:center; gap:8px }
+  .spark-svg{ width:20px; height:20px; display:inline-block; transform-origin:center; animation:sparkle 1800ms infinite linear; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+  @keyframes sparkle{ 0%{ transform: translateY(-2px) rotate(0deg) scale(1); opacity:1 } 50%{ transform: translateY(-6px) rotate(20deg) scale(1.08); opacity:0.9 } 100%{ transform: translateY(-2px) rotate(0deg) scale(1); opacity:1 } }
+
+  .sub{ font-size:13px; color:var(--muted); text-align:center; max-width:280px; z-index:3 }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px; height:52px; min-width:170px; padding:0 20px; border-radius:999px;
+    color:#04202c; font-weight:800; letter-spacing:0.6px; text-transform:uppercase; text-decoration:none; background: linear-gradient(135deg, rgba(79,211,255,0.95), rgba(107,140,255,0.95)); box-shadow: 0 12px 34px rgba(3,12,30,0.48), inset 0 -6px 18px rgba(255,255,255,0.04); border:none; cursor:pointer; transition: transform 220ms cubic-bezier(.2,.9,.3,1), filter 220ms; z-index:3;
+  }
+  .btn:hover{ transform: translateY(-6px) scale(1.02); filter:brightness(1.02) }
+  .btn:active{ transform: translateY(2px) scale(.995) }
+
+  .meta{ position:absolute; left:16px; bottom:12px; font-size:12px; color:rgba(230,245,255,0.12) }
+
+  .support{ display:flex; align-items:center; gap:10px; font-size:14px; color:var(--muted); text-decoration:none; padding:8px 14px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.008), rgba(255,255,255,0.002)); border: 1px solid rgba(255,255,255,0.03); transition: transform 180ms, box-shadow 180ms; z-index:6 }
+  .support:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,0.6) }
+  .support .dot{ width:10px; height:10px; border-radius:50%; background:var(--support-color); box-shadow: 0 6px 18px rgba(114,137,218,0.25), 0 0 8px rgba(114,137,218,0.12) inset }
+
+  .neon-line{ opacity:0.9; filter: drop-shadow(0 8px 18px rgba(80,150,255,0.06)); transform-origin:center; }
+  .neon-line.animate-1{ animation: lineFloat 8000ms ease-in-out infinite; }
+  .neon-line.animate-2{ animation: lineFloat 11000ms ease-in-out infinite reverse; }
+  @keyframes lineFloat{ 0%{ transform: translateY(0) }50%{ transform: translateY(-10px) }100%{ transform: translateY(0) } }
+
+  .page-foot{ position:relative; z-index:6; margin-top:6px; color:rgba(230,245,255,0.06); font-size:12px }
+
+  .card.enter{ animation: card-pop 820ms cubic-bezier(.2,.9,.3,1) both }
+  @keyframes card-pop{ 0%{ transform: perspective(900px) translateY(48px) rotateX(12deg) scale(.86); opacity:0 } 60%{ transform: perspective(900px) translateY(-6px) rotateX(6deg) scale(1.02); opacity:1 } 100%{ transform: perspective(900px) translateY(0) rotateX(0) scale(1); opacity:1 } }
+  .logo.enter{ animation: logo-fade 1100ms cubic-bezier(.2,.9,.3,1) both }
+  .btn.enter{ animation: btn-raise 1200ms cubic-bezier(.2,.9,.3,1) both }
+  @keyframes logo-fade{ from{ opacity:0; transform: translateY(-14px) } to{ opacity:1; transform: translateY(0) } }
+  @keyframes btn-raise{ from{ opacity:0; transform: translateY(20px) scale(.98) } to{ opacity:1; transform: translateY(0) scale(1) } }
+
+  .modal{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center }
+  .modal.hidden{ display:none }
+  .modal-backdrop{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.7)); backdrop-filter: blur(3px) }
+  .modal-panel{ position:relative; width:clamp(300px,86vw,520px); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:16px; padding:22px; border:1px solid rgba(255,255,255,0.06); box-shadow: 0 30px 80px rgba(0,0,0,0.8); z-index:2; transform: translateY(12px) scale(.995); opacity:0; transition: transform 260ms cubic-bezier(.2,.9,.3,1), opacity 260ms }
+  .modal.show .modal-panel{ transform: translateY(0) scale(1); opacity:1 }
+  .modal-panel h3{ margin:0 0 8px 0; font-size:20px }
+  .modal-panel p{ margin:0 0 12px 0; color:var(--muted); font-size:14px }
+  .perm-list{ margin:8px 0 16px 0; padding-left:18px; color:var(--muted); font-size:14px }
+  .modal-actions{ display:flex; gap:12px; justify-content:flex-end; align-items:center }
+  .btn.ghost{ background:transparent; color:var(--muted); box-shadow:none; border:1px solid rgba(255,255,255,0.04) }
+  .modal-close{ position:absolute; right:10px; top:6px; background:transparent; border:none; color:rgba(255,255,255,0.6); font-size:22px; cursor:pointer }
+
+  :focus{ outline:none }
+  :focus-visible{ outline: 3px solid rgba(79,211,255,0.14); outline-offset:4px; border-radius:10px }
+
+  @media (prefers-reduced-motion: reduce){ .card, .logo, .btn, .spark-svg, .blob, .neon-line, .top-waves svg { animation:none !important; transition:none !important } canvas#bg { display:none !important } }
+
+  @media (max-width:460px){ :root{ --card-size:320px } .logo{ font-size:36px } .wrap{ padding:20px } .btn{ min-width:150px } .top-waves{ height:110px } .top-logo{ width:64px; height:64px } }
+  </style>
+</head>
+<body>
+
+  <!-- TOP WAVES (animated, decorative) -->
+  <div class="top-waves" aria-hidden="true">
+    <svg viewBox="0 0 1600 140" preserveAspectRatio="xMinYMin slice" role="img" aria-hidden="true">
+      <!-- wave layer 1 (closest) -->
+      <g class="wave-group wave1">
+        <path d="M0,60 C200,10 400,110 700,70 C1000,30 1200,100 1600,60 L1600,140 L0,140 Z" fill="var(--wave-3)" opacity="0.18"></path>
+      </g>
+      <!-- wave layer 2 -->
+      <g class="wave-group wave2">
+        <path d="M0,40 C180,70 380,0 680,50 C980,100 1180,20 1600,40 L1600,140 L0,140 Z" fill="var(--wave-2)" opacity="0.12"></path>
+      </g>
+      <!-- wave layer 3 (furthest) -->
+      <g class="wave-group wave3">
+        <path d="M0,20 C150,50 360,0 660,20 C960,40 1240,10 1600,20 L1600,140 L0,140 Z" fill="var(--wave-1)" opacity="0.08"></path>
+      </g>
+    </svg>
+  </div>
+
+  <!-- top-left logo image (place file named pblogo.png in same folder) -->
+  <img src="pblogo.png" alt="ProBot logo" class="top-logo" />
+
+  <!-- canvas for particles -->
+  <canvas id="bg" aria-hidden="true"></canvas>
+
+  <!-- decorative svgs (neon lines + stars) -->
+  <div class="decor-svgs" aria-hidden="true">
+    <svg width="100%" height="100%" viewBox="0 0 1920 1080" preserveAspectRatio="none" style="position:absolute; inset:0; z-index:3;">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#6bb6ff" stop-opacity="0.08" /><stop offset="1" stop-color="#4fd3ff" stop-opacity="0.06" /></linearGradient>
+        <linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#6b8cff" stop-opacity="0.06" /><stop offset="1" stop-color="#a8b9ff" stop-opacity="0.04" /></linearGradient>
+      </defs>
+
+      <g class="neon-line animate-1" transform="translate(0,40)">
+        <path d="M -100 900 C 300 500, 700 300, 1200 600 S 2200 850, 2600 700" stroke="url(#g1)" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.9"/>
+      </g>
+      <g class="neon-line animate-2" transform="translate(0,-40)">
+        <path d="M -200 200 C 200 400, 700 560, 1200 320 S 2000 120, 2600 220" stroke="url(#g2)" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.85"/>
+      </g>
+
+      <g opacity="0.9">
+        <circle cx="170" cy="80" r="1.8" fill="#bff0ff" />
+        <circle cx="320" cy="160" r="1.6" fill="#98d6ff" />
+        <circle cx="840" cy="40" r="2.2" fill="#cfeeff" />
+        <circle cx="1520" cy="120" r="1.4" fill="#a7dfff" />
+      </g>
+    </svg>
+  </div>
+
+  <main class="wrap" role="main" aria-live="polite">
+    <section class="card" id="card" aria-labelledby="heroTitle" data-tilt="true">
+      <div class="blob" aria-hidden="true"></div>
+
+      <div class="brand" aria-hidden="false">
+        <div id="heroTitle" class="logo">
+          ProBot
+          <!-- inline SVG star (reliable on all systems) -->
+          <svg class="spark-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="url(#sparkGrad)" d="M12 2.5l1.9 4.2 4.6.7-3.3 3.2.8 4.6L12 14.9l-4 2.3.8-4.6L5.5 7.4l4.6-.7L12 2.5z"></path>
+            <defs>
+              <linearGradient id="sparkGrad" x1="0" x2="1">
+                <stop offset="0" stop-color="#fff" stop-opacity="0.98"/>
+                <stop offset="0.5" stop-color="#9be7ff" stop-opacity="0.95"/>
+                <stop offset="1" stop-color="#63c8ff" stop-opacity="0.98"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <p class="sub">Inteligentny bot Discord — szybkie zaproszenie, przyjazne UI i płynna animacja.</p>
+
+      <a id="addBtn" class="btn" href="#" role="button" aria-label="Dodaj ProBot do serwera">Dodaj</a>
+
+      <div class="meta" aria-hidden="true">Made server with ❤️ — ProBot</div>
+    </section>
+
+    <a class="support" href="https://discord.com/invite/probot" target="_blank" rel="noopener noreferrer" aria-label="Dołącz na Discord Support ProBot">
+      <span class="dot" aria-hidden="true"></span>
+      <span style="font-weight:700;color:var(--text);">Discord Support</span>
+      <span style="color:var(--muted); margin-left:8px;">— dołącz do nas</span>
+    </a>
+
+    <div class="page-foot" aria-hidden="true">© ProBot • 2025</div>
+  </main>
+
+  <!-- Invite Modal -->
+  <div id="inviteModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="modal-backdrop" data-action="close" tabindex="-1"></div>
+    <div class="modal-panel" role="document">
+      <h3 id="modalTitle">Zaprosić ProBot na serwer?</h3>
+      <p id="modalDesc">ProBot poprosi o uprawnienia — sprawdź i potwierdź, jeśli chcesz kontynuować.</p>
+
+      <ul class="perm-list">
+        <li><strong>Permissions:</strong> Administrator (pełne uprawnienia) — upewnij się, że ufasz botowi</li>
+        <li>Dostęp do integracji i zarządzania</li>
+        <li>Operacja otworzy nowe okno / kartę</li>
+      </ul>
+
+      <div class="modal-actions">
+        <button id="confirmInvite" class="btn">Potwierdź</button>
+        <button id="cancelInvite" class="btn ghost">Anuluj</button>
+      </div>
+
+      <button class="modal-close" aria-label="Zamknij modal" data-action="close">&times;</button>
+    </div>
+  </div>
+
+  <!-- ========== Script (unchanged except integration) ========== -->
+  <script>
+  (function(){
+    const $ = (s, ctx = document) => ctx.querySelector(s);
+    const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
+
+    // Canvas particles
+    const canvas = $('#bg');
+    const ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;
+    let W = window.innerWidth, H = window.innerHeight, particles = [];
+    const PARTICLE_DENSITY = 120000;
+
+    function resizeCanvas(){
+      if(!canvas) return;
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      createParticles(Math.round((W*H)/PARTICLE_DENSITY));
+    }
+
+    function createParticles(n){
+      particles = [];
+      const colors = ['rgba(79,211,255,0.12)','rgba(107,140,255,0.08)','rgba(255,255,255,0.06)'];
+      for(let i=0;i<n;i++){
+        particles.push({
+          x: Math.random()*W,
+          y: Math.random()*H,
+          r: 3 + Math.random()*24,
+          vx: (Math.random()-0.5)*0.2,
+          vy: -0.05 - Math.random()*0.25,
+          c: colors[Math.floor(Math.random()*colors.length)],
+          life: 40 + Math.random()*220,
+          alpha: 0.06 + Math.random()*0.14
+        });
+      }
+    }
+
+    function drawParticles(){
+      if(!ctx) return;
+      ctx.clearRect(0,0,W,H);
+      const g = ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0,'rgba(4,10,20,0.02)'); g.addColorStop(0.5,'rgba(3,8,18,0.02)'); g.addColorStop(1,'rgba(0,0,0,0.06)');
+      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+      ctx.globalCompositeOperation = 'screen';
+      particles.forEach(p=>{
+        p.x += p.vx; p.y += p.vy; p.vy -= 0.00002*Math.random(); p.life--;
+        if(p.y + p.r < -40 || p.x < -80 || p.x > W+80 || p.life < 0){
+          p.x = Math.random()*W; p.y = H + 40 + Math.random()*80; p.r = 3 + Math.random()*24;
+          p.vx = (Math.random()-0.5)*0.2; p.vy = -0.05 - Math.random()*0.25;
+          p.c = ['rgba(79,211,255,0.12)','rgba(107,140,255,0.08)','rgba(255,255,255,0.06)'][Math.floor(Math.random()*3)];
+          p.life = 40 + Math.random()*220; p.alpha = 0.06 + Math.random()*0.14;
+        }
+        const rg = ctx.createRadialGradient(p.x,p.y,p.r*0.1,p.x,p.y,p.r);
+        const center = p.c.replace(/[\d\.]+\)$/,'0.95)');
+        rg.addColorStop(0, center); rg.addColorStop(0.4, p.c); rg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.beginPath(); ctx.fillStyle = rg; ctx.globalAlpha = p.alpha; ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+      });
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(drawParticles);
+    }
+
+    // decorative sparkle
+    const decorPoints = $$('.decor-svgs circle');
+    function sparkleLoop(){
+      let frame = 0;
+      function step(){
+        frame++;
+        decorPoints.forEach((el,i)=>{
+          const t = Math.abs(Math.sin(frame*0.02 + i));
+          el.style.opacity = (0.4 + t*0.6).toString();
+        });
+        requestAnimationFrame(step);
+      }
+      if(decorPoints.length) requestAnimationFrame(step);
+    }
+
+    // entrance
+    function runEntrance(){
+      const card = $('#card'), logo = document.querySelector('.logo'), btn = document.querySelector('.btn');
+      setTimeout(()=>{ card && card.classList.add('enter'); logo && logo.classList.add('enter'); btn && btn.classList.add('enter'); }, 120);
+    }
+
+    // tilt
+    const cardEl = $('#card');
+    let rect = cardEl ? cardEl.getBoundingClientRect() : {left:0,top:0,width:0,height:0};
+    function updateRect(){ if(cardEl) rect = cardEl.getBoundingClientRect(); }
+    function attachTilt(){
+      updateRect();
+      if(!cardEl) return;
+      if(!('ontouchstart' in window)){
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseleave', ()=>{ cardEl.style.transform = ''; });
+      } else {
+        document.addEventListener('touchmove', onTouchMove, {passive:true});
+      }
+      window.addEventListener('resize', updateRect);
+    }
+    function onMouseMove(e){
+      const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+      const dx = (e.clientX - cx) / (rect.width/2), dy = (e.clientY - cy) / (rect.height/2);
+      const rx = dy*6, ry = dx*-8, tz = 1 + Math.abs(dx*dy)*0.02;
+      cardEl.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${tz})`;
+    }
+    function onTouchMove(e){
+      updateRect();
+      const t = e.touches[0];
+      const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+      const dx = (t.clientX - cx) / (rect.width/2), dy = (t.clientY - cy) / (rect.height/2);
+      const rx = dy*4, ry = dx*-6;
+      cardEl.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    }
+
+    // modal & invite
+    const oauthLink = 'https://discord.com/oauth2/authorize?client_id=1413215954489577643&scope=bot&permissions=1099780074548';
+    const addBtn = $('#addBtn'), modal = $('#inviteModal'), confirmBtn = $('#confirmInvite'), cancelBtn = $('#cancelInvite');
+    const closeEls = modal ? $$( '[data-action="close"]', modal ) : [];
+
+    function showModal(){ if(!modal) return; modal.classList.remove('hidden'); modal.classList.add('show'); setTimeout(()=>{ (confirmBtn || cancelBtn || addBtn).focus(); }, 10); document.body.style.overflow = 'hidden'; document.addEventListener('keydown', onModalKey); }
+    function hideModal(){ if(!modal) return; modal.classList.add('hidden'); modal.classList.remove('show'); document.body.style.overflow = ''; document.removeEventListener('keydown', onModalKey); addBtn && addBtn.focus(); }
+    function onModalKey(e){
+      if(e.key === 'Escape') { hideModal(); return; }
+      if(e.key === 'Tab'){
+        const focusable = Array.from(modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(el=>!el.disabled && el.offsetParent !== null);
+        if(focusable.length === 0) return;
+        const first = focusable[0], last = focusable[focusable.length-1];
+        if(e.shiftKey && document.activeElement === first){ last.focus(); e.preventDefault(); }
+        else if(!e.shiftKey && document.activeElement === last){ first.focus(); e.preventDefault(); }
+      }
+    }
+
+    function attachModalHandlers(){
+      if(!addBtn) return;
+      addBtn.addEventListener('click', e => { e.preventDefault(); showModal(); });
+      addBtn.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); showModal(); } });
+
+      confirmBtn && confirmBtn.addEventListener('click', () => { window.open(oauthLink, '_blank', 'noopener,noreferrer'); hideModal(); });
+      cancelBtn && cancelBtn.addEventListener('click', hideModal);
+      closeEls.forEach(el => el.addEventListener('click', hideModal));
+    }
+
+    /* Click sound */
+    let clickAudio = null;
+    try { clickAudio = new Audio('click.mp3'); clickAudio.preload = 'auto'; } catch(e){ clickAudio = null; }
+    function playClick(){
+      if(!clickAudio){
+        try { const s = new Audio('click.mp3'); s.play().catch(()=>{}); } catch(e){}
+        return;
+      }
+      try {
+        clickAudio.currentTime = 0;
+        const p = clickAudio.play();
+        if(p && p.catch) p.catch(()=>{});
+      } catch(err){ try { const s = new Audio('click.mp3'); s.play().catch(()=>{}); } catch(e){} }
+    }
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('button, a.btn, .btn, .support, .modal-close');
+      if(el) playClick();
+    }, true);
+
+    // init
+    function init(){
+      if(canvas && ctx){
+        resizeCanvas();
+        drawParticles();
+        window.addEventListener('resize', () => { clearTimeout(window.__probotResizeTimer); window.__probotResizeTimer = setTimeout(resizeCanvas, 120); });
+      }
+      if(decorPoints.length) sparkleLoop();
+      runEntrance();
+      attachTilt();
+      attachModalHandlers();
+    }
+
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+
+  })();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,254 @@
+/* ==================================================
+   styles.css — ProBot (dark, final)
+   - CSS dla index.html przygotowanego wcześniej
+   - Zapisz jako `styles.css` i podłącz w <head>
+   ================================================== */
+
+/* ---------- Theme variables ---------- */
+:root{
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+
+  /* background */
+  --bg-top: #071028;        /* very dark navy */
+  --bg-mid: #031022;        /* near-black blue */
+  --bg-bottom: #000000;     /* black */
+
+  /* accents */
+  --accent-cyan: #4fd3ff;
+  --accent-indigo: #6b8cff;
+  --support-color: #7289da; /* discord-like */
+
+  /* card */
+  --card-size: 370px;
+  --card-radius: 20px;
+  --glass-border: rgba(255,255,255,0.04);
+  --glass-bg: rgba(255,255,255,0.012);
+
+  /* text */
+  --text-primary: #e6f8ff;
+  --text-muted: rgba(230,245,255,0.72);
+
+  /* shadows & misc */
+  --shadow-1: 0 8px 30px rgba(0,0,0,0.6);
+  --shadow-2: 0 30px 80px rgba(0,0,0,0.7);
+  --focus-ring: 3px solid rgba(79,211,255,0.14);
+
+  --transition-fast: 180ms cubic-bezier(.2,.9,.3,1);
+  --transition-md: 320ms cubic-bezier(.2,.9,.3,1);
+}
+
+/* ---------- Dark/neon alternative (optional) ---------- */
+body[data-theme="neon"]{
+  --accent-cyan: #ffd56b;
+  --accent-indigo: #8b6bff;
+  --bg-top: #06112a;
+  --bg-mid: #03041a;
+}
+
+/* ---------- Reset & base ---------- */
+*{ box-sizing: border-box; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+html,body{ height:100%; }
+body{
+  margin:0; padding:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(1200px 500px at 10% 10%, rgba(79,211,255,0.03), transparent 8%),
+    radial-gradient(900px 400px at 90% 85%, rgba(107,140,255,0.03), transparent 9%),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 55%, var(--bg-bottom) 100%);
+  color: var(--text-primary);
+  line-height:1.35;
+}
+
+a{ color:inherit; }
+
+/* optional grain/vignette overlay */
+body::after{ content:""; position:fixed; inset:0; z-index:1; pointer-events:none; background: radial-gradient(60% 40% at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.28) 100%); mix-blend-mode:multiply; }
+
+/* hide canvas from assistive tech */
+canvas#bg{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.95 }
+
+/* ---------- Layout wrapper ---------- */
+.wrap{
+  position:relative; z-index:6; width:100%; max-width:1100px; padding:40px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px;
+}
+
+/* ---------- Card ---------- */
+.card{
+  width:var(--card-size); height:var(--card-size); border-radius: calc(var(--card-radius) + 6px);
+  padding:28px; display:flex; flex-direction:column; gap:16px; align-items:center; justify-content:center;
+  position:relative; overflow:hidden; transform-style:preserve-3d;
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-2), var(--shadow-1);
+  transition: transform var(--transition-md), box-shadow var(--transition-fast);
+  backdrop-filter: blur(8px) saturate(120%);
+}
+.card::before{ content:""; position:absolute; inset:-2px; z-index:0; background: linear-gradient(120deg, rgba(79,211,255,0.06), rgba(107,140,255,0.04)); filter: blur(28px); opacity:0.6; }
+.card > *{ position:relative; z-index:2 }
+.card:hover{ transform: translateY(-6px) scale(1.01); }
+
+/* small floating decorative blob inside card */
+.blob{ position:absolute; right:-40px; top:-40px; width:160px; height:160px; z-index:1; background: radial-gradient(circle at 30% 30%, rgba(79,211,255,0.12), rgba(107,140,255,0.06) 45%, transparent 60%); filter: blur(20px); transform: rotate(8deg); animation: floatBlob 7000ms ease-in-out infinite; pointer-events:none }
+@keyframes floatBlob{ 0%{ transform: translateY(0) rotate(0deg) }50%{ transform: translateY(-8px) rotate(8deg) }100%{ transform: translateY(0) rotate(0deg) } }
+
+/* ---------- Brand & Title ---------- */
+.brand{ display:flex; gap:10px; align-items:center; padding:6px 12px; border-radius:10px; background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); box-shadow: inset 0 -6px 18px rgba(0,0,0,0.35); font-weight:700 }
+.logo{ font-size:46px; font-weight:800; letter-spacing:0.6px; line-height:1; background: linear-gradient(90deg, #fff 0%, var(--accent-cyan) 28%, var(--accent-indigo) 64%, #fff 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; text-shadow: 0 10px 30px rgba(2,8,30,0.6) }
+.spark{ font-size:18px; transform:translateY(-2px); animation:sparkle 1800ms infinite linear }
+@keyframes sparkle{ 0%{ transform: translateY(-2px) rotate(0deg) scale(1); opacity:1 } 50%{ transform: translateY(-6px) rotate(20deg) scale(1.08); opacity:0.9 } 100%{ transform: translateY(-2px) rotate(0deg) scale(1); opacity:1 } }
+
+.sub{ font-size:13px; color:var(--text-muted); text-align:center; max-width:280px }
+
+/* ---------- Button ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px; height:52px; min-width:170px; padding:0 20px; border-radius:999px; cursor:pointer; user-select:none;
+  color:#04202c; font-weight:800; letter-spacing:0.6px; text-transform:uppercase; text-decoration:none; border:none;
+  background: linear-gradient(135deg, rgba(79,211,255,0.96), rgba(107,140,255,0.96)); box-shadow: 0 12px 34px rgba(3,12,30,0.48), inset 0 -6px 18px rgba(255,255,255,0.04);
+  transition: transform var(--transition-fast), filter var(--transition-fast), box-shadow var(--transition-fast); position:relative; overflow:hidden; z-index:3;
+}
+.btn:hover{ transform: translateY(-6px) scale(1.02); filter:brightness(1.02); box-shadow: 0 22px 48px rgba(3,12,30,0.6) }
+.btn:active{ transform: translateY(2px) }
+.btn:focus{ outline:none; box-shadow: 0 0 0 6px rgba(79,211,255,0.06), var(--shadow-1) }
+.btn.ghost{ background:transparent; color:var(--text-muted); box-shadow:none; border:1px solid rgba(255,255,255,0.04) }
+.btn::after{ content:""; position:absolute; inset:0; border-radius:999px; transition: transform 420ms cubic-bezier(.2,.9,.3,1), opacity 420ms; opacity:0; transform:scale(0.98); pointer-events:none }
+.btn:active::after{ opacity:0.06; transform:scale(1.06) }
+
+/* ---------- Support link (footer CTA) ---------- */
+.support{ display:flex; align-items:center; gap:10px; font-size:14px; color:var(--text-muted); text-decoration:none; padding:8px 14px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.008), rgba(255,255,255,0.002)); border:1px solid rgba(255,255,255,0.03); transition: transform var(--transition-fast), box-shadow var(--transition-fast); z-index:6 }
+.support:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,0.6) }
+.support .dot{ width:10px; height:10px; border-radius:50%; background:var(--support-color); box-shadow: 0 6px 18px rgba(114,137,218,0.25), 0 0 8px rgba(114,137,218,0.12) inset }
+
+/* ---------- Decorative neon lines (SVG helpers) ---------- */
+.neon-line{ opacity:0.9; filter: drop-shadow(0 8px 18px rgba(80,150,255,0.06)); transform-origin:center }
+.neon-line.animate-1{ animation: lineFloat 8000ms ease-in-out infinite }
+.neon-line.animate-2{ animation: lineFloat 11000ms ease-in-out infinite reverse }
+@keyframes lineFloat{ 0%{ transform: translateY(0) }50%{ transform: translateY(-10px) }100%{ transform: translateY(0) } }
+
+/* ---------- Modal ---------- */
+.modal{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center }
+.modal.hidden{ display:none }
+.modal-backdrop{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.7)); backdrop-filter: blur(3px) }
+.modal-panel{ position:relative; width:clamp(300px,86vw,520px); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:16px; padding:22px; border:1px solid rgba(255,255,255,0.06); box-shadow: 0 30px 80px rgba(0,0,0,0.8); z-index:2; transform: translateY(12px) scale(.995); opacity:0; transition: transform var(--transition-md), opacity var(--transition-fast) }
+.modal.show .modal-panel{ transform: translateY(0) scale(1); opacity:1 }
+.modal-panel h3{ margin:0 0 8px 0; font-size:20px }
+.modal-panel p{ margin:0 0 12px 0; color:var(--text-muted); font-size:14px }
+.perm-list{ margin:8px 0 16px 0; padding-left:18px; color:var(--text-muted); font-size:14px }
+.modal-actions{ display:flex; gap:12px; justify-content:flex-end; align-items:center }
+.modal-close{ position:absolute; right:10px; top:6px; background:transparent; border:none; color:rgba(255,255,255,0.6); font-size:22px; cursor:pointer }
+
+/* ---------- Entrance animations ---------- */
+.card.enter{ animation: card-pop 820ms cubic-bezier(.2,.9,.3,1) both }
+@keyframes card-pop{ 0%{ transform: perspective(900px) translateY(48px) rotateX(12deg) scale(.86); opacity:0 } 60%{ transform: perspective(900px) translateY(-6px) rotateX(6deg) scale(1.02); opacity:1 } 100%{ transform: perspective(900px) translateY(0) rotateX(0) scale(1); opacity:1 } }
+.logo.enter{ animation: logo-fade 1100ms cubic-bezier(.2,.9,.3,1) both }
+.btn.enter{ animation: btn-raise 1200ms cubic-bezier(.2,.9,.3,1) both }
+@keyframes logo-fade{ from{ opacity:0; transform: translateY(-14px) } to{ opacity:1; transform: translateY(0) } }
+@keyframes btn-raise{ from{ opacity:0; transform: translateY(20px) scale(.98) } to{ opacity:1; transform: translateY(0) scale(1) } }
+
+/* ---------- Accessibility ---------- */
+:focus{ outline:none }
+:focus-visible{ outline: var(--focus-ring); outline-offset:4px; border-radius:10px }
+
+@media (prefers-reduced-motion: reduce){ .card, .logo, .btn, .spark, .blob, .neon-line { animation:none !important; transition:none !important } canvas#bg{ display:none !important } }
+
+/* ---------- Responsive ---------- */
+@media (max-width:540px){ :root{ --card-size: 320px } .logo{ font-size:36px } .wrap{ padding:22px } .btn{ min-width:150px } }
+
+/* ---------- Utilities ---------- */
+.center{ display:flex; align-items:center; justify-content:center }
+.hidden{ display:none !important }
+.small{ font-size:12px; color:var(--text-muted) }
+
+/* EOF */
+
+/* ==================================================
+   DODATKOWE ANIMACJE I EFEKTY (dodane) — keep everything above 1:1
+   - animowany gradient w logo
+   - pulsujący glow dla przycisku
+   - scanlines / subtle film grain ruchome
+   - przyjemne stroke animation dla neon-line (SVG)
+   - shimmer glass 'wipe' na karcie
+   - pulse support dot
+   - drobne mikro-interakcje
+   ================================================== */
+
+/* ---------- Animated logo gradient (subtle sweep) ---------- */
+.logo{
+  background-image: linear-gradient(90deg, #fff 0%, var(--accent-cyan) 28%, var(--accent-indigo) 64%, #fff 100%);
+  background-size: 220% 100%;
+  animation: logoGradient 5000ms linear infinite;
+}
+@keyframes logoGradient{
+  0%{ background-position: 0% 50% }
+  50%{ background-position: 100% 50% }
+  100%{ background-position: 0% 50% }
+}
+
+/* ---------- Button neon pulse + ripple on hover ---------- */
+.btn{
+  --btn-glow: 0 8px 36px rgba(79,211,255,0.12), 0 2px 10px rgba(79,211,255,0.06);
+  box-shadow: var(--shadow-1), var(--btn-glow);
+}
+.btn{ transition: transform var(--transition-fast), filter var(--transition-fast), box-shadow 420ms cubic-bezier(.2,.9,.3,1); }
+.btn:hover{ box-shadow: 0 32px 80px rgba(79,211,255,0.08), 0 12px 36px rgba(107,140,255,0.06); }
+
+/* ripple element */
+.btn::before{
+  content:""; position:absolute; left:50%; top:50%; width:8px; height:8px; border-radius:50%; transform:translate(-50%,-50%) scale(1); opacity:0; pointer-events:none; background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.06) 30%, transparent 60%);
+}
+.btn:focus::before, .btn:hover::before{ animation: btnRipple 900ms cubic-bezier(.2,.9,.3,1) forwards }
+@keyframes btnRipple{
+  0%{ width:8px; height:8px; opacity:0.3; transform:translate(-50%,-50%) scale(0.6) }
+  60%{ opacity:0.12 }
+  100%{ width:240px; height:240px; opacity:0 }
+}
+
+/* subtle glowing pulse when idle */
+.btn.idlePulse{ animation: btnIdlePulse 2800ms ease-in-out infinite }
+@keyframes btnIdlePulse{ 0%{ box-shadow: var(--shadow-1), 0 6px 22px rgba(79,211,255,0.06) } 50%{ box-shadow: var(--shadow-1), 0 18px 48px rgba(79,211,255,0.09) } 100%{ box-shadow: var(--shadow-1), 0 6px 22px rgba(79,211,255,0.06) } }
+
+/* ---------- Glass shimmer wipe for card ---------- */
+.card::after{
+  content:""; position:absolute; inset:-20%; z-index:1; pointer-events:none; background: linear-gradient(120deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 100%); transform: translateX(-120%) rotate(6deg); filter: blur(30px);
+  transition: transform 900ms cubic-bezier(.2,.9,.3,1), opacity 600ms; opacity:0.7;
+}
+.card:hover::after{ transform: translateX(120%) rotate(6deg); opacity:1 }
+
+/* ---------- Scanline / subtle film strip movement ---------- */
+body::before{
+  content:""; position:fixed; inset:0; z-index:2; pointer-events:none; mix-blend-mode:overlay; opacity:0.03;
+  background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 6px);
+  animation: scanMove 6000ms linear infinite;
+}
+@keyframes scanMove{ 0%{ background-position-y:0 } 100%{ background-position-y:1000px } }
+
+/* ---------- Support dot pulse ---------- */
+.support .dot{ animation: supportPulse 1800ms ease-in-out infinite; }
+@keyframes supportPulse{ 0%{ transform: scale(1); box-shadow: 0 6px 18px rgba(114,137,218,0.25), 0 0 8px rgba(114,137,218,0.12) inset } 50%{ transform: scale(1.14); box-shadow: 0 18px 48px rgba(114,137,218,0.28), 0 0 20px rgba(114,137,218,0.14) inset } 100%{ transform: scale(1); box-shadow: 0 6px 18px rgba(114,137,218,0.25), 0 0 8px rgba(114,137,218,0.12) inset } }
+
+/* ---------- neon-line stroke animation for SVGs ---------- */
+.neon-line{ stroke: url(#neonGradient); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round }
+.neon-line{ stroke-dasharray: 240; stroke-dashoffset: 0; animation: neonDash 4000ms linear infinite }
+@keyframes neonDash{
+  0%{ stroke-dashoffset: 240 } 50%{ stroke-dashoffset: 120 } 100%{ stroke-dashoffset: 240 }
+}
+
+/* ---------- Mini parallax illusion using transform on hover ---------- */
+.card:hover .brand{ transform: translateZ(24px) translateY(-4px) }
+.card:hover .sub{ transform: translateZ(12px) }
+.card .brand, .card .sub{ transition: transform 420ms cubic-bezier(.2,.9,.3,1) }
+
+/* ---------- Modal backdrop blur expand on show ---------- */
+.modal .modal-backdrop{ transition: backdrop-filter 420ms ease, opacity 420ms ease }
+.modal.show .modal-backdrop{ backdrop-filter: blur(6px) }
+
+/* ---------- Tiny attention helpers ---------- */
+.logo.shine{ position:relative; overflow:hidden }
+.logo.shine::after{ content:""; position:absolute; left:-40%; top:0; width:40%; height:100%; transform: skewX(-18deg); background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.03) 100%); animation: logoShine 2200ms linear infinite }
+@keyframes logoShine{ 0%{ left:-40% } 50%{ left:120% } 100%{ left:120% } }
+
+/* ---------- Reduced motion respects user prefs (reinforce) ---------- */
+@media (prefers-reduced-motion: reduce){
+  .logo, .btn, .card, .support .dot, body::before, .card::after, .neon-line{ animation:none !important; transition:none !important }
+}
+
+/* EOF - dodatki */
